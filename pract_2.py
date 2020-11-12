@@ -32,9 +32,15 @@ img_RGB[:, :, 2] = B
 
 # 採用類似 matlab 顯示多個座標軸的形式並行顯示，比較方便
 # 由於 matlab 是按照RGB順序顯示的，所以需要將原影象的順序重調一下
-plt.subplot(231), plt.imshow(img,'gray'), plt.title("img_BGR")
+plt.subplot(231), plt.imshow(img,"gray"), plt.title("img_BGR")
 plt.subplot(232), plt.imshow(img_RGB, "gray"), plt.title("Img_RGB")
 plt.subplot(233), plt.imshow(B, "gray"), plt.title("B")
 plt.subplot(234), plt.imshow(G, "gray"), plt.title("G")
 plt.subplot(235), plt.imshow(R, "gray"), plt.title("R")
 plt.show()
+
+
+# 來自imshow docstring：如果X是3-D「cmap將被忽略」。
+# 要使用色彩映射表，您必須將二維數組傳遞到imshow。
+# 例如，您可以繪製其中一個顏色通道，如im[:,:,0]，或繪製三個通道的平均值，即im.mean(axis=2)。 
+# （但是，如果im具有形狀(m, n, 4)，你可能不希望包括在平均alpha通道。）
