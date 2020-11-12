@@ -22,8 +22,8 @@ img = cv2.drawKeypoints(img,
 
 
 
-# cv2.imshow("sift",img)
+cv2.imshow("sift",img)
 
-# # Press any button to stop the running code.
-# cv2.waitKey(0) 
-# cv2.destroyAllWindows()
+# Press any button to stop the running code.
+cv2.waitKey(0) 
+cv2.destroyAllWindows()
