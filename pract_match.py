@@ -8,8 +8,10 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-img_1 = cv2.imread('occ.png')
-img_2 = cv2.imread('occ1.png')
+# img_1 = cv2.imread('occ.png')
+# img_2 = cv2.imread('occ1.png')
+img_1 = cv2.imread('map2.1.png')
+img_2 = cv2.imread('map2.2.png')
 
 # gray_1 = cv2.cvtColor(img_1, cv2.COLOR_RGB2GRAY) # 灰階圖
 # gray_2 = cv2.cvtColor(img_2, cv2.COLOR_RGB2GRAY) # 灰階圖
@@ -32,7 +34,7 @@ matches = bf.knnMatch(descriptor_1, descriptor_2, k=2) # 使用Matcher.knnMatch(
 
 good = []
 for m, n in matches:
-    if m.distance < 0.75*n.distance: #獲得的K個最佳匹配中取出來第一個和第二個，進行比值，比值小於0.75，則爲好的匹配點
+    if m.distance < 0.65*n.distance: #獲得的K個最佳匹配中取出來第一個和第二個，進行比值，比值小於0.75，則爲好的匹配點
         good.append([m])
         # print(m.queryIdx, m.trainIdx, m.imgIdx)
         # print(n.queryIdx, n.trainIdx, n.imgIdx)
