@@ -1,18 +1,12 @@
-# x = []
+import numpy as np
 
-# for i in range(10):
-#     x.append([
-#         i,
-#         2*i,
-#         3*i
-#     ])
+x2 = np.array([
+    [1, 2, 3, 3, 2, 1],
+    [1, 2, 3, 3, 2, 1]
+])
 
-# for i,j,z in x:
-#     print(i,j,z)
+print(x2)
 
-x = None
+x3 = np.power(x2,2)
 
-if x < 10:
-    print("true")
-else:
-    print("false")
+print(np.arctan(x3))
