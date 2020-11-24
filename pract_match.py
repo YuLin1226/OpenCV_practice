@@ -127,3 +127,8 @@ for i in range(np.shape(overlap_in_img_2)[0]):
         if overlap_in_img_2[i,j] == 0:
             occupied_list_2.append([i,j])
 
+
+print("=====================")
+print(occupied_list_1)
+print("=====================")
+print(occupied_list_2)
