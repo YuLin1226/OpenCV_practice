@@ -1,12 +1,10 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
-x2 = np.array([
-    [1, 2, 3, 3, 2, 1],
-    [1, 2, 3, 3, 2, 1]
-])
 
-print(x2)
 
-x3 = np.power(x2,2)
+img = np.zeros((10,10))
+img[5,5] = 1
 
-print(np.arctan(x3))
+plt.imshow(img, cmap='gray')
+plt.show()

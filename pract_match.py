@@ -23,8 +23,8 @@ img_2 = cv2.imread('map4.2.png')
 
 
 
-# gray_1 = cv2.cvtColor(img_1, cv2.COLOR_RGB2GRAY) # 灰階圖
-# gray_2 = cv2.cvtColor(img_2, cv2.COLOR_RGB2GRAY) # 灰階圖
+img_1 = cv2.cvtColor(img_1, cv2.COLOR_RGB2GRAY) # 灰階圖
+img_2 = cv2.cvtColor(img_2, cv2.COLOR_RGB2GRAY) # 灰階圖
 
 siftDetector = cv2.xfeatures2d.SIFT_create()
 key_points_1, descriptor_1 = siftDetector.detectAndCompute(img_1, None)
@@ -86,17 +86,44 @@ for i in good[:20]:
     elif key_points_2[train_idx].pt[1] < ym_2:
         ym_2 = key_points_2[train_idx].pt[1]
 
-dx, dy, _ = np.shape(img_1)
+dx, dy = np.shape(img_1)
 xM_2 += dy
 xm_2 += dy
 
+plt.subplot(311)
 plt.imshow(img_3)
 plt.plot([xM_1, xM_1, xm_1, xm_1, xM_1], [yM_1, ym_1, ym_1, yM_1, yM_1], color='red')
 plt.plot([xM_2, xM_2, xm_2, xm_2, xM_2], [yM_2, ym_2, ym_2, yM_2, yM_2], color='red')
-plt.show()
 
 
 
 
 
+
+overlap_in_img_1 = np.zeros((int(xM_1),int(yM_1)))
+overlap_in_img_2 = np.zeros((int(xM_2),int(yM_2)))
+
+
+overlap_in_img_1 = img_1[int(ym_1)-50 : int(yM_1)+50 , int(xm_1)-50 : int(xM_1)+50]
+overlap_in_img_2 = img_2[int(ym_2)-50 : int(yM_2)+50 , int(xm_2-dy)-50 : int(xM_2-dy)+50]
+
+
+plt.subplot(312), plt.imshow(overlap_in_img_1 ,cmap='gray')
+plt.subplot(313), plt.imshow(overlap_in_img_2 ,cmap='gray')
+# plt.show()
+
+
+occupied_list_1, occupied_list_2 = [], []
+ 
+
+
+for i in range(np.shape(overlap_in_img_1)[0]):
+    for j in range(np.shape(overlap_in_img_1)[1]):
+        if overlap_in_img_1[i,j] == 0:
+            occupied_list_1.append([i,j])
+
+for i in range(np.shape(overlap_in_img_2)[0]):
+    for j in range(np.shape(overlap_in_img_2)[1]):
+        if overlap_in_img_2[i,j] == 0:
+            occupied_list_2.append([i,j])
 
