@@ -82,8 +82,8 @@ class ScanMatching():
         return rot_angle, translation_x, translation_y
 
 
-    def icp(self, reference_points, points, max_iterations=100, distance_threshold=0.5, convergence_translation_threshold=1e-5,
-            convergence_rotation_threshold=1e-2, point_pairs_threshold=50, verbose=False):
+    def icp(self, reference_points, points, max_iterations=1000, distance_threshold=50, convergence_translation_threshold=1,
+            convergence_rotation_threshold=1e-3, point_pairs_threshold=10, verbose=False):
         """
         An implementation of the Iterative Closest Point algorithm that matches a set of M 2D points to another set
         of N 2D (reference) points.
@@ -180,6 +180,7 @@ class ScanMatching():
 # Third set of the image.
 img_1 = cv2.imread('map4.1.png')
 img_2 = cv2.imread('map4.2.png')
+# img_2 = cv2.imread('map4.3.png')
 
 
 
@@ -292,7 +293,16 @@ for i in range(np.shape(overlap_in_img_2)[0]):
 occupied_ndarray_1 = np.array(occupied_list_1)
 occupied_ndarray_2 = np.array(occupied_list_2)
 
+plt.figure()
+plt.scatter(occupied_ndarray_1[:,0], occupied_ndarray_1[:,1], c='blue', s=5)
+plt.scatter(occupied_ndarray_2[:,0], occupied_ndarray_2[:,1], c='red', s=1)
+
+
 SM = ScanMatching()
 
 _, _, [x, y, yaw] = SM.icp(occupied_ndarray_1, occupied_ndarray_2)
-print(yaw)
+print("angle = %f degree"%(yaw/math.pi * 180))
+
+
+
+plt.show()
