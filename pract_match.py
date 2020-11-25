@@ -82,8 +82,8 @@ class ScanMatching():
         return rot_angle, translation_x, translation_y
 
 
-    def icp(self, reference_points, points, max_iterations=1000, distance_threshold=50, convergence_translation_threshold=1,
-            convergence_rotation_threshold=1e-3, point_pairs_threshold=10, verbose=False):
+    def icp(self, reference_points, points, max_iterations=2000, distance_threshold=300, convergence_translation_threshold=1,
+            convergence_rotation_threshold=1e-3, point_pairs_threshold=600, verbose=False):
         """
         An implementation of the Iterative Closest Point algorithm that matches a set of M 2D points to another set
         of N 2D (reference) points.
@@ -167,6 +167,21 @@ class ScanMatching():
         return transformation_history, points, [x, y, yaw]
 
 
+def _rot(theta, vector):
+    
+    '''
+    theta (rad)
+    vector (Nx2)
+    '''
+
+    R = np.array([
+        [math.cos(theta), -math.sin(theta)],
+        [math.sin(theta), math.cos(theta) ]
+    ])
+
+    return R.dot(vector.T).T
+
+
 
 
 # First set of the image.
@@ -179,8 +194,8 @@ class ScanMatching():
 
 # Third set of the image.
 img_1 = cv2.imread('map4.1.png')
-img_2 = cv2.imread('map4.2.png')
-# img_2 = cv2.imread('map4.3.png')
+# img_2 = cv2.imread('map4.2.png')
+img_2 = cv2.imread('map4.3.png')
 
 
 
@@ -291,18 +306,32 @@ for i in range(np.shape(overlap_in_img_2)[0]):
 
 
 occupied_ndarray_1 = np.array(occupied_list_1)
+dx = ( max(occupied_ndarray_1[:,0]) + min(occupied_ndarray_1[:,0]) )/2
+dy = ( max(occupied_ndarray_1[:,1]) + min(occupied_ndarray_1[:,1]) )/2
+occupied_ndarray_1[:,0] -= int(dx)
+occupied_ndarray_1[:,1] -= int(dy)
+
 occupied_ndarray_2 = np.array(occupied_list_2)
+dx = ( max(occupied_ndarray_2[:,0]) + min(occupied_ndarray_2[:,0]) )/2
+dy = ( max(occupied_ndarray_2[:,1]) + min(occupied_ndarray_2[:,1]) )/2
+occupied_ndarray_2[:,0] -= int(dx)
+occupied_ndarray_2[:,1] -= int(dy)
 
-plt.figure()
-plt.scatter(occupied_ndarray_1[:,0], occupied_ndarray_1[:,1], c='blue', s=5)
-plt.scatter(occupied_ndarray_2[:,0], occupied_ndarray_2[:,1], c='red', s=1)
 
+occupied_ndarray_2_ = _rot(math.pi/180*60 , occupied_ndarray_2)
 
 SM = ScanMatching()
 
-_, _, [x, y, yaw] = SM.icp(occupied_ndarray_1, occupied_ndarray_2)
-print("angle = %f degree"%(yaw/math.pi * 180))
+_, pts, [x, y, yaw] = SM.icp(occupied_ndarray_1, occupied_ndarray_2_)
 
 
+print("translation_(x, y) : (%f, %f) "%(x,y))
+print("angle : %f degree"%(yaw/math.pi * 180))
 
+
+plt.figure()
+p1 = plt.scatter(occupied_ndarray_1[:,0], occupied_ndarray_1[:,1], c='black', s=10)
+p2 = plt.scatter(occupied_ndarray_2_[:,0], occupied_ndarray_2_[:,1], c='blue', s=5)
+p3 = plt.scatter(pts[:,0], pts[:,1], c='red', s=1)
+plt.legend([p1, p2, p3], ['map_1', 'map_2', 'alignment'], loc='lower right', scatterpoints=1)
 plt.show()
