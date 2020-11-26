@@ -114,8 +114,10 @@ hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
 ax2.axis('off')
 ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
 ax2.set_title('Histogram of Oriented Gradients')
-plt.show()
+# plt.show()
 
+print(hog_image_rescaled.shape)
+print(fd.shape)
 
 
 # hog = Hog_descriptor(img, cell_size=8, bin_size=8)
