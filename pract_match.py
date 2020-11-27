@@ -203,6 +203,24 @@ img_2 = cv2.imread('map4.3.png')
 img_1 = cv2.cvtColor(img_1, cv2.COLOR_RGB2GRAY) # 灰階圖
 img_2 = cv2.cvtColor(img_2, cv2.COLOR_RGB2GRAY) # 灰階圖
 
+r, c = np.shape(img_1)
+for i in range(r):
+    for j in range(c):
+        if img_1[i, j]  >0:
+             img_1[i, j] = 255
+        else:
+            img_1[i, j] = 0
+
+r, c = np.shape(img_2)
+for i in range(r):
+    for j in range(c):
+        if img_2[i, j]  >0:
+             img_2[i, j] = 255
+        else:
+            img_2[i, j] = 0
+
+
+
 siftDetector = cv2.xfeatures2d.SIFT_create()
 key_points_1, descriptor_1 = siftDetector.detectAndCompute(img_1, None)
 key_points_2, descriptor_2 = siftDetector.detectAndCompute(img_2, None)
@@ -221,7 +239,7 @@ matches = bf.knnMatch(descriptor_1, descriptor_2, k=2) # 使用Matcher.knnMatch(
 
 good = []
 for m, n in matches:
-    if m.distance < 0.1*n.distance: #獲得的K個最佳匹配中取出來第一個和第二個，進行比值，比值小於0.75，則爲好的匹配點
+    if m.distance < 0.01*n.distance: #獲得的K個最佳匹配中取出來第一個和第二個，進行比值，比值小於0.75，則爲好的匹配點
         good.append([m])
         # print(m.queryIdx, m.trainIdx, m.imgIdx)
         # print(n.queryIdx, n.trainIdx, n.imgIdx)
@@ -267,7 +285,7 @@ dx, dy = np.shape(img_1)
 xM_2 += dy
 xm_2 += dy
 
-plt.subplot(311)
+
 plt.imshow(img_3)
 plt.plot([xM_1, xM_1, xm_1, xm_1, xM_1], [yM_1, ym_1, ym_1, yM_1, yM_1], color='red')
 plt.plot([xM_2, xM_2, xm_2, xm_2, xM_2], [yM_2, ym_2, ym_2, yM_2, yM_2], color='red')
@@ -284,54 +302,54 @@ overlap_in_img_2 = np.zeros((int(xM_2),int(yM_2)))
 overlap_in_img_1 = img_1[int(ym_1)-50 : int(yM_1)+50 , int(xm_1)-50 : int(xM_1)+50]
 overlap_in_img_2 = img_2[int(ym_2)-50 : int(yM_2)+50 , int(xm_2-dy)-50 : int(xM_2-dy)+50]
 
+plt.figure()
+plt.subplot(211), plt.imshow(overlap_in_img_1 ,cmap='gray')
+plt.subplot(212), plt.imshow(overlap_in_img_2 ,cmap='gray')
+plt.show()
 
-plt.subplot(312), plt.imshow(overlap_in_img_1 ,cmap='gray')
-plt.subplot(313), plt.imshow(overlap_in_img_2 ,cmap='gray')
-# plt.show()
 
-
-occupied_list_1, occupied_list_2 = [], []
+# occupied_list_1, occupied_list_2 = [], []
  
 
 
-for i in range(np.shape(overlap_in_img_1)[0]):
-    for j in range(np.shape(overlap_in_img_1)[1]):
-        if overlap_in_img_1[i,j] == 0:
-            occupied_list_1.append([i,j])
+# for i in range(np.shape(overlap_in_img_1)[0]):
+#     for j in range(np.shape(overlap_in_img_1)[1]):
+#         if overlap_in_img_1[i,j] == 0:
+#             occupied_list_1.append([i,j])
 
-for i in range(np.shape(overlap_in_img_2)[0]):
-    for j in range(np.shape(overlap_in_img_2)[1]):
-        if overlap_in_img_2[i,j] == 0:
-            occupied_list_2.append([i,j])
-
-
-occupied_ndarray_1 = np.array(occupied_list_1)
-dx = ( max(occupied_ndarray_1[:,0]) + min(occupied_ndarray_1[:,0]) )/2
-dy = ( max(occupied_ndarray_1[:,1]) + min(occupied_ndarray_1[:,1]) )/2
-occupied_ndarray_1[:,0] -= int(dx)
-occupied_ndarray_1[:,1] -= int(dy)
-
-occupied_ndarray_2 = np.array(occupied_list_2)
-dx = ( max(occupied_ndarray_2[:,0]) + min(occupied_ndarray_2[:,0]) )/2
-dy = ( max(occupied_ndarray_2[:,1]) + min(occupied_ndarray_2[:,1]) )/2
-occupied_ndarray_2[:,0] -= int(dx)
-occupied_ndarray_2[:,1] -= int(dy)
+# for i in range(np.shape(overlap_in_img_2)[0]):
+#     for j in range(np.shape(overlap_in_img_2)[1]):
+#         if overlap_in_img_2[i,j] == 0:
+#             occupied_list_2.append([i,j])
 
 
-occupied_ndarray_2_ = _rot(math.pi/180*60 , occupied_ndarray_2)
+# occupied_ndarray_1 = np.array(occupied_list_1)
+# dx = ( max(occupied_ndarray_1[:,0]) + min(occupied_ndarray_1[:,0]) )/2
+# dy = ( max(occupied_ndarray_1[:,1]) + min(occupied_ndarray_1[:,1]) )/2
+# occupied_ndarray_1[:,0] -= int(dx)
+# occupied_ndarray_1[:,1] -= int(dy)
 
-SM = ScanMatching()
-
-_, pts, [x, y, yaw] = SM.icp(occupied_ndarray_1, occupied_ndarray_2_)
-
-
-print("translation_(x, y) : (%f, %f) "%(x,y))
-print("angle : %f degree"%(yaw/math.pi * 180))
+# occupied_ndarray_2 = np.array(occupied_list_2)
+# dx = ( max(occupied_ndarray_2[:,0]) + min(occupied_ndarray_2[:,0]) )/2
+# dy = ( max(occupied_ndarray_2[:,1]) + min(occupied_ndarray_2[:,1]) )/2
+# occupied_ndarray_2[:,0] -= int(dx)
+# occupied_ndarray_2[:,1] -= int(dy)
 
 
-plt.figure()
-p1 = plt.scatter(occupied_ndarray_1[:,0], occupied_ndarray_1[:,1], c='black', s=10)
-p2 = plt.scatter(occupied_ndarray_2_[:,0], occupied_ndarray_2_[:,1], c='blue', s=5)
-p3 = plt.scatter(pts[:,0], pts[:,1], c='red', s=1)
-plt.legend([p1, p2, p3], ['map_1', 'map_2', 'alignment'], loc='lower right', scatterpoints=1)
-plt.show()
+# occupied_ndarray_2_ = _rot(math.pi/180*60 , occupied_ndarray_2)
+
+# SM = ScanMatching()
+
+# _, pts, [x, y, yaw] = SM.icp(occupied_ndarray_1, occupied_ndarray_2_)
+
+
+# print("translation_(x, y) : (%f, %f) "%(x,y))
+# print("angle : %f degree"%(yaw/math.pi * 180))
+
+
+# plt.figure()
+# p1 = plt.scatter(occupied_ndarray_1[:,0], occupied_ndarray_1[:,1], c='black', s=10)
+# p2 = plt.scatter(occupied_ndarray_2_[:,0], occupied_ndarray_2_[:,1], c='blue', s=5)
+# p3 = plt.scatter(pts[:,0], pts[:,1], c='red', s=1)
+# plt.legend([p1, p2, p3], ['map_1', 'map_2', 'alignment'], loc='lower right', scatterpoints=1)
+# plt.show()
