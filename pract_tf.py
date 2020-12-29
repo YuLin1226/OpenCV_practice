@@ -24,18 +24,21 @@ def rotate(image, angle, center=None, scale=1.0):
     return rotated
 
 if __name__ == "__main__":
+    
     img = cv2.imread('map4.1.png')
     img_gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY) # 灰階圖
 
     r,c = np.shape(img_gray)
-
+    
     img_empty = np.zeros((3*r, 3*c))
     img_empty[r:2*r, c:c*2]=img_gray
-    img_rot = rotate(image=img_empty, angle=45, center=None, scale=1)
+    print(r,c)
+    img_rot = rotate(image=img_empty, angle=0, center=(c,r), scale=1)
+    img_rot1 = rotate(image=img_empty, angle=45, center=(c,r), scale=1)
 
     # img_rot = rotate(image=img_gray, angle=45, center=None, scale=0.5)
     # img_rot = rotate(image=img_rot, angle=0, center=None, scale=2)
     
-    plt.subplot(1,2,1), plt.imshow(img_gray, cmap='gray')
-    plt.subplot(1,2,2), plt.imshow(img_rot, cmap='gray')
+    plt.subplot(1,2,1), plt.imshow(img_rot, cmap='gray'), plt.scatter([c],[r], s=10, c='red')
+    plt.subplot(1,2,2), plt.imshow(img_rot1, cmap='gray'), plt.scatter([c],[r], s=10, c='red')
     plt.show()
