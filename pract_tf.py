@@ -51,14 +51,16 @@ def extract_layer(map_input=None, bound=None, layer_type="white"):
 
 if __name__ == "__main__":
     
-    img = cv2.imread('map4.1.png')
-    img_gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY) # 灰階圖
+    img1 = cv2.imread('map4.1.png')
+    img2 = cv2.imread('map4.2.png')
+    img1_gray = cv2.cvtColor(img1, cv2.COLOR_RGB2GRAY)
+    img2_gray = cv2.cvtColor(img2, cv2.COLOR_RGB2GRAY)
 
     r,c = np.shape(img_gray)
     bound = max(r,c)
     
-    map_white_layer = extract_layer(map_input=img_gray, bound=bound, layer_type="white")
-    map_black_layer = extract_layer(map_input=img_gray, bound=bound, layer_type="black")
+    map_white_layer = extract_layer(map_input=img1_gray, bound=bound, layer_type="white")
+    map_black_layer = extract_layer(map_input=img1_gray, bound=bound, layer_type="black")
 
     # img_tmp = np.zeros((5*bound, 5*bound))
     # img_tmp[2*bound:2*bound+r, 2*bound:2*bound+c] = img_gray
