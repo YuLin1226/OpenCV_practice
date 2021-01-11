@@ -295,6 +295,7 @@ xM_2 += dy
 xm_2 += dy
 
 
+# Draw match result and red rectangle.
 plt.imshow(img_3)
 plt.plot([xM_1, xM_1, xm_1, xm_1, xM_1], [yM_1, ym_1, ym_1, yM_1, yM_1], color='red')
 plt.plot([xM_2, xM_2, xm_2, xm_2, xM_2], [yM_2, ym_2, ym_2, yM_2, yM_2], color='red')
@@ -311,6 +312,7 @@ overlap_in_img_2 = np.zeros((int(xM_2),int(yM_2)))
 overlap_in_img_1 = img_1[int(ym_1)-50 : int(yM_1)+50 , int(xm_1)-50 : int(xM_1)+50]
 overlap_in_img_2 = img_2[int(ym_2)-50 : int(yM_2)+50 , int(xm_2-dy)-50 : int(xM_2-dy)+50]
 
+# Extract the red rectangles.
 plt.figure()
 plt.subplot(211), plt.imshow(overlap_in_img_1 ,cmap='gray')
 plt.subplot(212), plt.imshow(overlap_in_img_2 ,cmap='gray')
