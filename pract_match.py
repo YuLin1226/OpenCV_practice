@@ -234,16 +234,16 @@ bf = cv2.BFMatcher() # 創建暴力匹配對象，cv2.BFMatcher()；
 matches = bf.knnMatch(descriptor_1, descriptor_2, k=2) # 使用Matcher.knnMatch()獲得兩幅圖像的K個最佳匹配；
 # bf.knnMatch 會輸出 descriptor_2 中對應 descriptor_1 的最佳匹配。
 # 也就是說，matches 長度會與 descriptor_1 相同，matches 每一列的元素中含有K個來自 descriptor_2 的最佳匹配 (照相似度排序)。
-# print(len(descriptor_1), len(descriptor_2), len(matches))
-# print(matches[0][0].distance, matches[0][0].imgIdx, matches[0][0].queryIdx, matches[0][0].trainIdx)
-# print(matches[0][1].distance, matches[0][1].imgIdx, matches[0][1].queryIdx, matches[0][1].trainIdx)
+print(len(descriptor_1), len(descriptor_2), len(matches))
+print(matches[1][0].distance, matches[1][0].imgIdx, matches[1][0].queryIdx, matches[1][0].trainIdx)
+print(matches[1][1].distance, matches[1][1].imgIdx, matches[1][1].queryIdx, matches[1][1].trainIdx)
 
 # matches class -> DMatch
 # DMatch Attribute:
 # 1. distance : similarity, the smaller the more similar.
 # 2. imgIdx : always constant 0, useful when matching with multiple images.
-# 3. queryIdx : train image index (first image)
-# 4. trainIdx : query descriptor index (second image)
+# 3. queryIdx : train image index (first image)，descriptor_1中的特徵
+# 4. trainIdx : query descriptor index (second image)，，descriptor_2中的特徵
 
 
 good = []
