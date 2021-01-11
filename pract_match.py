@@ -224,14 +224,23 @@ for i in range(r):
 siftDetector = cv2.xfeatures2d.SIFT_create()
 key_points_1, descriptor_1 = siftDetector.detectAndCompute(img_1, None)
 key_points_2, descriptor_2 = siftDetector.detectAndCompute(img_2, None)
+# descriptor 內含 n 個特徵 (列)，每個特徵含有 128 個bin value (行)。
+# key_points class 可查閱 CV2.KeyPoint()
+# 捕捉特徵座標使用 key_point[n].pt[0 or 1], 0代表x, 1代表y
+
+
 
 bf = cv2.BFMatcher() # 創建暴力匹配對象，cv2.BFMatcher()；
 matches = bf.knnMatch(descriptor_1, descriptor_2, k=2) # 使用Matcher.knnMatch()獲得兩幅圖像的K個最佳匹配；
-
+# bf.knnMatch 會輸出 descriptor_2 中對應 descriptor_1 的最佳匹配。
+# 也就是說，matches 長度會與 descriptor_1 相同，matches 每一列的元素中含有K個來自 descriptor_2 的最佳匹配 (照相似度排序)。
+# print(len(descriptor_1), len(descriptor_2), len(matches))
+# print(matches[0][0].distance, matches[0][0].imgIdx, matches[0][0].queryIdx, matches[0][0].trainIdx)
+# print(matches[0][1].distance, matches[0][1].imgIdx, matches[0][1].queryIdx, matches[0][1].trainIdx)
 
 # matches class -> DMatch
 # DMatch Attribute:
-# 1. distance
+# 1. distance : similarity, the smaller the more similar.
 # 2. imgIdx : always constant 0, useful when matching with multiple images.
 # 3. queryIdx : train image index (first image)
 # 4. trainIdx : query descriptor index (second image)
