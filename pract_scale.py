@@ -48,27 +48,27 @@ if __name__ == "__main__":
         r, c = np.shape(img_1)
         img_3 = np.ones((math.ceil(r*ratio), math.ceil(c*ratio)))*255
         img_3[0:r, 0:c] = img_1
-        img_3 = _rotate_image(image=img_3, angle=0, center=(0,0), scale=ratio).astype(int)
+        img_3 = _rotate_image(image=img_3, angle=0, center=(0,0), scale=ratio).astype(np.uint8)
     else:
         img_3 = _rotate_image(image=img_1, angle=0, center=(0,0), scale=ratio)
     
     # print(np.amax(img_3), np.amin(img_3))
     siftDetector = cv2.xfeatures2d.SIFT_create()
-    # key_points_1, descriptor_1 = siftDetector.detectAndCompute(img_1, None)
+    key_points_1, descriptor_1 = siftDetector.detectAndCompute(img_1, None)
     key_points_3, descriptor_3 = siftDetector.detectAndCompute(img_3, None)
 
-    # bf = cv2.BFMatcher()
-    # matches = bf.knnMatch(descriptor_1, descriptor_3, k=2)
+    bf = cv2.BFMatcher()
+    matches = bf.knnMatch(descriptor_1, descriptor_3, k=2)
 
-    # good = []
-    # for m, n in matches:
-    #     if m.distance < 0.75*n.distance:
-    #         good.append([m])
+    good = []
+    for m, n in matches:
+        if m.distance < 0.75*n.distance:
+            good.append([m])
 
-    # img_4 = np.empty((600,600))
-    # img_4 = cv2.drawMatchesKnn(img_1, key_points_1, img_3, key_points_3, good[:20], img_4, flags=2)
-    # plt.imshow(img_4, cmap='gray')
-    # plt.show()
+    img_4 = np.empty((600,600))
+    img_4 = cv2.drawMatchesKnn(img_1, key_points_1, img_3, key_points_3, good[:20], img_4, flags=2)
+    plt.imshow(img_4, cmap='gray')
+    plt.show()
 
     
     # img_3 = cv2.drawKeypoints(img_3,
