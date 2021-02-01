@@ -182,7 +182,37 @@ def _rot(theta, vector):
     return R.dot(vector.T).T
 
 
+def _enlarge_map(input_map):
 
+    r, c = np.shape(input_map)
+    map_ext = np.ones((3*r, 3*c))*128
+    map_ext[r:r+r, c:c+c] = input_map
+    map_ext = map_ext.astype(np.uint8)
+    return map_ext
+
+
+def _transform_state(input_map):
+    """
+    Probabilities in OGMs will be transformed into 3 values: 0, 128, 255. \n
+    Occupied Space:   0\n
+    Unknown  Space: 128\n
+    Free     Space: 255
+    """
+
+    r, c = np.shape(input_map)
+    for i in range(r):
+        for j in range(c):
+
+            if input_map[i, j]  > 230:  # White >> Free Space
+                input_map[i, j] = 255
+            
+            elif input_map[i, j] < 100: # Black >> Occupied Space
+                input_map[i, j] = 0
+            
+            else:                       # Gray  >> Unknown Space
+                input_map[i, j] = 255
+
+    return input_map
 
 # First set of the image.
 # img_1 = cv2.imread('occ.png')
@@ -193,31 +223,22 @@ def _rot(theta, vector):
 # img_2 = cv2.imread('map2.2.png')
 
 # Third set of the image.
-img_1 = cv2.imread('map4.1.png')
-# img_2 = cv2.imread('map4.2.png')
-img_2 = cv2.imread('map4.3.png')
+# img_1 = cv2.imread('map4.1.png')
+# # img_2 = cv2.imread('map4.2.png')
+# img_2 = cv2.imread('map4.3.png')
 
+# Third set of the image.
+img_1 = cv2.imread('Gazebo_test_map//tesst2.png')
+img_2 = cv2.imread('Gazebo_test_map//tesst1.png')
 
 
 
 img_1 = cv2.cvtColor(img_1, cv2.COLOR_RGB2GRAY) # 灰階圖
 img_2 = cv2.cvtColor(img_2, cv2.COLOR_RGB2GRAY) # 灰階圖
 
-r, c = np.shape(img_1)
-for i in range(r):
-    for j in range(c):
-        if img_1[i, j]  >0:
-             img_1[i, j] = 255
-        else:
-            img_1[i, j] = 0
 
-r, c = np.shape(img_2)
-for i in range(r):
-    for j in range(c):
-        if img_2[i, j]  >0:
-             img_2[i, j] = 255
-        else:
-            img_2[i, j] = 0
+img_1 = _transform_state(input_map=img_1)
+img_2 = _transform_state(input_map=img_2)
 
 
 
@@ -248,122 +269,111 @@ print(matches[1][1].distance, matches[1][1].imgIdx, matches[1][1].queryIdx, matc
 
 good = []
 for m, n in matches:
-    if m.distance < 0.01*n.distance: #獲得的K個最佳匹配中取出來第一個和第二個，進行比值，比值小於0.75，則爲好的匹配點
+    if m.distance < 0.75*n.distance: #獲得的K個最佳匹配中取出來第一個和第二個，進行比值，比值小於0.75，則爲好的匹配點
         good.append([m])
         # print(m.queryIdx, m.trainIdx, m.imgIdx)
         # print(n.queryIdx, n.trainIdx, n.imgIdx)
 
 img_3 = np.empty((600,600))
-img_3 = cv2.drawMatchesKnn(img_1, key_points_1, img_2, key_points_2, good[:20], img_3, flags=2) #採用cv2.drawMatchesKnn()函數，在最佳匹配的點之間繪製直線
+img_3 = cv2.drawMatchesKnn(img_1, key_points_1, img_2, key_points_2, good, img_3, flags=2) #採用cv2.drawMatchesKnn()函數，在最佳匹配的點之間繪製直線
 
-xM_1 = key_points_1[good[0][0].queryIdx].pt[0]
-xm_1 = key_points_1[good[0][0].queryIdx].pt[0]
-yM_1 = key_points_1[good[0][0].queryIdx].pt[1] 
-ym_1 = key_points_1[good[0][0].queryIdx].pt[1]
+# xM_1 = key_points_1[good[0][0].queryIdx].pt[0]
+# xm_1 = key_points_1[good[0][0].queryIdx].pt[0]
+# yM_1 = key_points_1[good[0][0].queryIdx].pt[1] 
+# ym_1 = key_points_1[good[0][0].queryIdx].pt[1]
 
-xM_2 = key_points_2[good[0][0].trainIdx].pt[0]
-xm_2 = key_points_2[good[0][0].trainIdx].pt[0] 
-yM_2 = key_points_2[good[0][0].trainIdx].pt[1] 
-ym_2 = key_points_2[good[0][0].trainIdx].pt[1]
+# xM_2 = key_points_2[good[0][0].trainIdx].pt[0]
+# xm_2 = key_points_2[good[0][0].trainIdx].pt[0] 
+# yM_2 = key_points_2[good[0][0].trainIdx].pt[1] 
+# ym_2 = key_points_2[good[0][0].trainIdx].pt[1]
                             
-for i in good[:20]:
-    query_idx = i[0].queryIdx
-    train_idx = i[0].trainIdx
+# for i in good[:20]:
+#     query_idx = i[0].queryIdx
+#     train_idx = i[0].trainIdx
 
-    if key_points_1[query_idx].pt[0] > xM_1:
-        xM_1 = key_points_1[query_idx].pt[0]
-    elif key_points_1[query_idx].pt[0] < xm_1:
-        xm_1 = key_points_1[query_idx].pt[0]
+#     if key_points_1[query_idx].pt[0] > xM_1:
+#         xM_1 = key_points_1[query_idx].pt[0]
+#     elif key_points_1[query_idx].pt[0] < xm_1:
+#         xm_1 = key_points_1[query_idx].pt[0]
 
-    if key_points_1[query_idx].pt[1] > yM_1:
-        yM_1 = key_points_1[query_idx].pt[1]
-    elif key_points_1[query_idx].pt[1] < ym_1:
-        ym_1 = key_points_1[query_idx].pt[1]
+#     if key_points_1[query_idx].pt[1] > yM_1:
+#         yM_1 = key_points_1[query_idx].pt[1]
+#     elif key_points_1[query_idx].pt[1] < ym_1:
+#         ym_1 = key_points_1[query_idx].pt[1]
 
-    if key_points_2[train_idx].pt[0] > xM_2:
-        xM_2 = key_points_2[train_idx].pt[0]
-    elif key_points_2[train_idx].pt[0] < xm_2:
-        xm_2 = key_points_2[train_idx].pt[0]
+#     if key_points_2[train_idx].pt[0] > xM_2:
+#         xM_2 = key_points_2[train_idx].pt[0]
+#     elif key_points_2[train_idx].pt[0] < xm_2:
+#         xm_2 = key_points_2[train_idx].pt[0]
 
-    if key_points_2[train_idx].pt[1] > yM_2:
-        yM_2 = key_points_2[train_idx].pt[1]
-    elif key_points_2[train_idx].pt[1] < ym_2:
-        ym_2 = key_points_2[train_idx].pt[1]
+#     if key_points_2[train_idx].pt[1] > yM_2:
+#         yM_2 = key_points_2[train_idx].pt[1]
+#     elif key_points_2[train_idx].pt[1] < ym_2:
+#         ym_2 = key_points_2[train_idx].pt[1]
 
-dx, dy = np.shape(img_1)
-xM_2 += dy
-xm_2 += dy
-
+# dx, dy = np.shape(img_1)
+# xM_2 += dy
+# xm_2 += dy
 
 # Draw match result and red rectangle.
 plt.imshow(img_3)
-plt.plot([xM_1, xM_1, xm_1, xm_1, xM_1], [yM_1, ym_1, ym_1, yM_1, yM_1], color='red')
-plt.plot([xM_2, xM_2, xm_2, xm_2, xM_2], [yM_2, ym_2, ym_2, yM_2, yM_2], color='red')
+# plt.plot([xM_1, xM_1, xm_1, xm_1, xM_1], [yM_1, ym_1, ym_1, yM_1, yM_1], color='red')
+# plt.plot([xM_2, xM_2, xm_2, xm_2, xM_2], [yM_2, ym_2, ym_2, yM_2, yM_2], color='red')
+
+# overlap_in_img_1 = np.zeros((int(xM_1),int(yM_1)))
+# overlap_in_img_2 = np.zeros((int(xM_2),int(yM_2)))
+# overlap_in_img_1 = img_1[int(ym_1)-50 : int(yM_1)+50 , int(xm_1)-50 : int(xM_1)+50]
+# overlap_in_img_2 = img_2[int(ym_2)-50 : int(yM_2)+50 , int(xm_2-dy)-50 : int(xM_2-dy)+50]
+
+# # Extract the red rectangles.
+# plt.figure()
+# plt.subplot(211), plt.imshow(overlap_in_img_1 ,cmap='gray')
+# plt.subplot(212), plt.imshow(overlap_in_img_2 ,cmap='gray')
+# # plt.show()
 
 
+# occupied_list_1, occupied_list_2 = [], []
+
+# # collect occupied points.
+# for i in range(np.shape(overlap_in_img_1)[0]):
+#     for j in range(np.shape(overlap_in_img_1)[1]):
+#         if overlap_in_img_1[i,j] == 0:
+#             occupied_list_1.append([i,j])
+
+# for i in range(np.shape(overlap_in_img_2)[0]):
+#     for j in range(np.shape(overlap_in_img_2)[1]):
+#         if overlap_in_img_2[i,j] == 0:
+#             occupied_list_2.append([i,j])
+
+# # pre-rotation : move the center
+# occupied_ndarray_1 = np.array(occupied_list_1)
+# # dx = ( max(occupied_ndarray_1[:,0]) + min(occupied_ndarray_1[:,0]) )/2
+# # dy = ( max(occupied_ndarray_1[:,1]) + min(occupied_ndarray_1[:,1]) )/2
+# dx = np.mean(occupied_ndarray_1[:,0])
+# dy = np.mean(occupied_ndarray_1[:,1])
+# occupied_ndarray_1[:,0] -= int(dx)
+# occupied_ndarray_1[:,1] -= int(dy)
+
+# occupied_ndarray_2 = np.array(occupied_list_2)
+# # dx = ( max(occupied_ndarray_2[:,0]) + min(occupied_ndarray_2[:,0]) )/2
+# # dy = ( max(occupied_ndarray_2[:,1]) + min(occupied_ndarray_2[:,1]) )/2
+# dx = np.mean(occupied_ndarray_2[:,0])
+# dy = np.mean(occupied_ndarray_2[:,1])
+# occupied_ndarray_2[:,0] -= int(dx)
+# occupied_ndarray_2[:,1] -= int(dy)
 
 
+# occupied_ndarray_2_ = _rot(math.pi/180*60 , occupied_ndarray_2)
+
+# SM = ScanMatching()
+# _, pts, [x, y, yaw] = SM.icp(occupied_ndarray_1, occupied_ndarray_2_)
+# print("translation_(x, y) : (%f, %f) "%(x,y))
+# print("angle : %f degree"%(yaw/math.pi * 180))
 
 
-overlap_in_img_1 = np.zeros((int(xM_1),int(yM_1)))
-overlap_in_img_2 = np.zeros((int(xM_2),int(yM_2)))
-
-
-overlap_in_img_1 = img_1[int(ym_1)-50 : int(yM_1)+50 , int(xm_1)-50 : int(xM_1)+50]
-overlap_in_img_2 = img_2[int(ym_2)-50 : int(yM_2)+50 , int(xm_2-dy)-50 : int(xM_2-dy)+50]
-
-# Extract the red rectangles.
-plt.figure()
-plt.subplot(211), plt.imshow(overlap_in_img_1 ,cmap='gray')
-plt.subplot(212), plt.imshow(overlap_in_img_2 ,cmap='gray')
-# plt.show()
-
-
-occupied_list_1, occupied_list_2 = [], []
-
-# collect occupied points.
-for i in range(np.shape(overlap_in_img_1)[0]):
-    for j in range(np.shape(overlap_in_img_1)[1]):
-        if overlap_in_img_1[i,j] == 0:
-            occupied_list_1.append([i,j])
-
-for i in range(np.shape(overlap_in_img_2)[0]):
-    for j in range(np.shape(overlap_in_img_2)[1]):
-        if overlap_in_img_2[i,j] == 0:
-            occupied_list_2.append([i,j])
-
-# pre-rotation : move the center
-occupied_ndarray_1 = np.array(occupied_list_1)
-# dx = ( max(occupied_ndarray_1[:,0]) + min(occupied_ndarray_1[:,0]) )/2
-# dy = ( max(occupied_ndarray_1[:,1]) + min(occupied_ndarray_1[:,1]) )/2
-dx = np.mean(occupied_ndarray_1[:,0])
-dy = np.mean(occupied_ndarray_1[:,1])
-occupied_ndarray_1[:,0] -= int(dx)
-occupied_ndarray_1[:,1] -= int(dy)
-
-occupied_ndarray_2 = np.array(occupied_list_2)
-# dx = ( max(occupied_ndarray_2[:,0]) + min(occupied_ndarray_2[:,0]) )/2
-# dy = ( max(occupied_ndarray_2[:,1]) + min(occupied_ndarray_2[:,1]) )/2
-dx = np.mean(occupied_ndarray_2[:,0])
-dy = np.mean(occupied_ndarray_2[:,1])
-occupied_ndarray_2[:,0] -= int(dx)
-occupied_ndarray_2[:,1] -= int(dy)
-
-
-occupied_ndarray_2_ = _rot(math.pi/180*60 , occupied_ndarray_2)
-
-SM = ScanMatching()
-
-_, pts, [x, y, yaw] = SM.icp(occupied_ndarray_1, occupied_ndarray_2_)
-
-
-print("translation_(x, y) : (%f, %f) "%(x,y))
-print("angle : %f degree"%(yaw/math.pi * 180))
-
-
-plt.figure()
-p1 = plt.scatter(occupied_ndarray_1[:,0], occupied_ndarray_1[:,1], c='black', s=10)
-p2 = plt.scatter(occupied_ndarray_2_[:,0], occupied_ndarray_2_[:,1], c='blue', s=5)
-p3 = plt.scatter(pts[:,0], pts[:,1], c='red', s=1)
-plt.legend([p1, p2, p3], ['map_1', 'map_2', 'alignment'], loc='lower right', scatterpoints=1)
+# plt.figure()
+# p1 = plt.scatter(occupied_ndarray_1[:,0], occupied_ndarray_1[:,1], c='black', s=10)
+# p2 = plt.scatter(occupied_ndarray_2_[:,0], occupied_ndarray_2_[:,1], c='blue', s=5)
+# p3 = plt.scatter(pts[:,0], pts[:,1], c='red', s=1)
+# plt.legend([p1, p2, p3], ['map_1', 'map_2', 'alignment'], loc='lower right', scatterpoints=1)
 plt.show()
