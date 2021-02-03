@@ -190,6 +190,16 @@ def _enlarge_map(input_map):
     map_ext = map_ext.astype(np.uint8)
     return map_ext
 
+def _rotate_image(image, angle, center=None, scale=1.0):
+
+    (h, w) = image.shape[:2]
+    # If the center of the rotation is not defined, use the center of the image.
+    if center is None:
+        center = (w / 2, h / 2)
+    M = cv2.getRotationMatrix2D(center, angle, scale)
+    rotated = cv2.warpAffine(image, M, (w, h))
+    return rotated
+
 
 def _transform_state(input_map):
     """
@@ -228,7 +238,7 @@ def _transform_state(input_map):
 # img_2 = cv2.imread('map4.3.png')
 
 # Third set of the image.
-img_1 = cv2.imread('Gazebo_test_map//tesst2.png')
+img_1 = cv2.imread('Gazebo_test_map//tesst.png')
 img_2 = cv2.imread('Gazebo_test_map//tesst1.png')
 
 
@@ -242,9 +252,14 @@ img_2 = _transform_state(input_map=img_2)
 
 
 
-siftDetector = cv2.xfeatures2d.SIFT_create()
-key_points_1, descriptor_1 = siftDetector.detectAndCompute(img_1, None)
-key_points_2, descriptor_2 = siftDetector.detectAndCompute(img_2, None)
+orb = cv2.ORB_create()
+key_points_1, descriptor_1 = orb.detectAndCompute(img_1, None)
+key_points_2, descriptor_2 = orb.detectAndCompute(img_2, None)
+
+
+# siftDetector = cv2.xfeatures2d.SIFT_create()
+# key_points_1, descriptor_1 = siftDetector.detectAndCompute(img_1, None)
+# key_points_2, descriptor_2 = siftDetector.detectAndCompute(img_2, None)
 # descriptor 內含 n 個特徵 (列)，每個特徵含有 128 個bin value (行)。
 # key_points class 可查閱 CV2.KeyPoint()
 # 捕捉特徵座標使用 key_point[n].pt[0 or 1], 0代表x, 1代表y
