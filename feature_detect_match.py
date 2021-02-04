@@ -13,14 +13,23 @@ def feature_detect_match(img1, img2, method="sift"):
     
     elif method == "surf":
         surf = cv2.xfeatures2d.SURF_create(400)
-        key_points_1, descriptor_1 = surf.detectAndCompute(img_1, None)
-        key_points_2, descriptor_2 = surf.detectAndCompute(img_2, None)
+        key_points_1, descriptor_1 = surf.detectAndCompute(img1, None)
+        key_points_2, descriptor_2 = surf.detectAndCompute(img2, None)
     
     elif method == "orb":        
         orb = cv2.ORB_create()
-        key_points_1, descriptor_1 = orb.detectAndCompute(img_1, None)
-        key_points_2, descriptor_2 = orb.detectAndCompute(img_2, None)
+        key_points_1, descriptor_1 = orb.detectAndCompute(img1, None)
+        key_points_2, descriptor_2 = orb.detectAndCompute(img2, None)
     
+    elif method == "fast":        
+        fast = cv2.FastFeatureDetector_create()
+        key_points_1 = fast.detect(img1, None)
+        key_points_2 = fast.detect(img2, None)
+        
+        br = cv2.BRISK_create()
+        key_points_1, descriptor_1 = br.compute(img1,  key_points_1)
+        key_points_2, descriptor_2 = br.compute(img2,  key_points_2)
+
     else:
         print("Method selection error, please input 'sift', 'surf', or 'orb'.")
         return
@@ -42,19 +51,19 @@ def feature_detect_match(img1, img2, method="sift"):
 
 
 if __name__ == '__main__':
-    img_1 = cv2.imread("c:\\Users\\Yulin\\Desktop\\tesst.png")
+    img_1 = cv2.imread('Gazebo_test_map/tesst2.png')
     img_1 = cv2.cvtColor(img_1, cv2.COLOR_RGB2GRAY) 
-    img_2 = cv2.imread("c:\\Users\\Yulin\\Desktop\\tesst1.png")
+    img_2 = cv2.imread('Gazebo_test_map/tesst1.png')
     img_2 = cv2.cvtColor(img_2, cv2.COLOR_RGB2GRAY) 
 
     img_sift = feature_detect_match(img1=img_1, img2=img_2, method="sift")
-    img_surf = feature_detect_match(img1=img_1, img2=img_2, method="surf")
+    img_surf = feature_detect_match(img1=img_1, img2=img_2, method="fast")
     img_orb = feature_detect_match(img1=img_1, img2=img_2, method="orb")
     
     fig, ax = plt.subplots(3, 1, figsize=(10, 8))
 
     ax[0].imshow(img_sift, cmap='gray'), ax[0].set_title("sift")
-    ax[1].imshow(img_surf, cmap='gray'), ax[1].set_title("surf")
+    ax[1].imshow(img_surf, cmap='gray'), ax[1].set_title("fast")
     ax[2].imshow(img_orb, cmap='gray'), ax[2].set_title("orb")
     
     plt.show()
