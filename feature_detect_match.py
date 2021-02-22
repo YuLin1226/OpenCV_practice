@@ -4,6 +4,29 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
+def _transform_state(input_map):
+    """
+    Probabilities in OGMs will be transformed into 3 values: 0, 128, 255. \n
+    Occupied Space:   0\n
+    Unknown  Space: 128\n
+    Free     Space: 255
+    """
+
+    r, c = np.shape(input_map)
+    for i in range(r):
+        for j in range(c):
+
+            if input_map[i, j]  > 230:  # White >> Free Space
+                input_map[i, j] = 255
+            
+            elif input_map[i, j] < 100: # Black >> Occupied Space
+                input_map[i, j] = 0
+            
+            else:                       # Gray  >> Unknown Space
+                input_map[i, j] = 255
+
+    return input_map
+
 def feature_detect_match(img1, img2, method="sift"):
     
     if method == "sift":
@@ -52,9 +75,12 @@ def feature_detect_match(img1, img2, method="sift"):
 
 if __name__ == '__main__':
     img_1 = cv2.imread('Gazebo_test_map/tesst2.png')
-    img_1 = cv2.cvtColor(img_1, cv2.COLOR_RGB2GRAY) 
-    img_2 = cv2.imread('Gazebo_test_map/tesst1.png')
+    img_1 = cv2.cvtColor(img_1, cv2.COLOR_RGB2GRAY)
+    img_1 = _transform_state(input_map=img_1)
+
+    img_2 = cv2.imread('Gazebo_test_map/test0223_2.png')
     img_2 = cv2.cvtColor(img_2, cv2.COLOR_RGB2GRAY) 
+    img_2 = _transform_state(input_map=img_2)
 
     img_sift = feature_detect_match(img1=img_1, img2=img_2, method="sift")
     img_surf = feature_detect_match(img1=img_1, img2=img_2, method="fast")
