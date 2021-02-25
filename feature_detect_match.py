@@ -69,27 +69,52 @@ def feature_detect_match(img1, img2, method="sift"):
     return img3
 
 
+def dilate(img, L=2):
+
+    img_r, img_c = np.shape(img)
+    new_img = np.ones((img_r, img_c))*255
+    black_pts = np.where(img==0)
+    _, length = np.shape(black_pts)
+    for i in range(length):
+        x = black_pts[0][i]
+        y = black_pts[1][i]
+        new_img[x-L:x+L+1, y-L:y+L+1] = 0
+
+    return new_img.astype(np.uint8)
 
 
 
 
 if __name__ == '__main__':
-    img_1 = cv2.imread('Gazebo_test_map/tesst2.png')
+    img_1 = cv2.imread('Gazebo_test_map/tesst1.png')
     img_1 = cv2.cvtColor(img_1, cv2.COLOR_RGB2GRAY)
     img_1 = _transform_state(input_map=img_1)
+    img_1_ = dilate(img_1)
 
     img_2 = cv2.imread('Gazebo_test_map/test0223_2.png')
     img_2 = cv2.cvtColor(img_2, cv2.COLOR_RGB2GRAY) 
     img_2 = _transform_state(input_map=img_2)
+    img_2_ = dilate(img_2)
+
 
     img_sift = feature_detect_match(img1=img_1, img2=img_2, method="sift")
-    img_surf = feature_detect_match(img1=img_1, img2=img_2, method="fast")
-    img_orb = feature_detect_match(img1=img_1, img2=img_2, method="orb")
+    img_dilate_sift = feature_detect_match(img1=img_1_, img2=img_2_, method="sift")
+    # img_surf = feature_detect_match(img1=img_1, img2=img_2, method="fast")
+    # img_orb = feature_detect_match(img1=img_1, img2=img_2, method="orb")
     
-    fig, ax = plt.subplots(3, 1, figsize=(10, 8))
+    # fig, ax = plt.subplots(3, 1, figsize=(10, 8))
 
-    ax[0].imshow(img_sift, cmap='gray'), ax[0].set_title("sift")
-    ax[1].imshow(img_surf, cmap='gray'), ax[1].set_title("fast")
-    ax[2].imshow(img_orb, cmap='gray'), ax[2].set_title("orb")
+    # ax[0].imshow(img_sift, cmap='gray'), ax[0].set_title("sift")
+    # ax[1].imshow(img_surf, cmap='gray'), ax[1].set_title("fast")
+    # ax[2].imshow(img_orb, cmap='gray'), ax[2].set_title("orb")
     
+    p1 = plt.subplot(211)
+    plt.imshow(img_sift, cmap='gray')
+    p1.set_title('sift')
+
+    p2 = plt.subplot(212)
+    plt.imshow(img_dilate_sift, cmap='gray')
+    p2.set_title('dilate + sift')
+
+    plt.tight_layout()
     plt.show()
