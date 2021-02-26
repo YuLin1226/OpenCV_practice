@@ -101,11 +101,11 @@ def feature_detect_match(img1, img2, method="sift", delete_pairs=False):
                 train_list.append(good[i][0].trainIdx)
         
         img3 = np.empty((600,600))
-        img3 = cv2.drawMatchesKnn(img1, key_points_1, img2, key_points_2, good, img3, flags=2) #採用cv2.drawMatchesKnn()函數，在最佳匹配的點之間繪製直線
+        img3 = cv2.drawMatchesKnn(img1, key_points_1, img2, key_points_2, good_new, img3, flags=2) #採用cv2.drawMatchesKnn()函數，在最佳匹配的點之間繪製直線
 
     else:
         img3 = np.empty((600,600))
-        img3 = cv2.drawMatchesKnn(img1, key_points_1, img2, key_points_2, best_pair, img3, flags=2) #採用cv2.drawMatchesKnn()函數，在最佳匹配的點之間繪製直線
+        img3 = cv2.drawMatchesKnn(img1, key_points_1, img2, key_points_2, good, img3, flags=2) #採用cv2.drawMatchesKnn()函數，在最佳匹配的點之間繪製直線
 
     return img3
 
