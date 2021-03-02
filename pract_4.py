@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-img = cv2.imread("lena.jpg",1)
+img = cv2.imread("Gazebo_test_map/test0223_3.png",1)
 
 img_gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 
