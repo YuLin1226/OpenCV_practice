@@ -132,8 +132,11 @@ def erode(img, L=1):
     for i in range(length):
         x = black_pts[0][i]
         y = black_pts[1][i]
-        if np.amax(img[x-L:x+L+1, y-L:y+L+1]) == 0:
-            new_img[x,y] = 0
+        if x-L < 0 or y-L < 0 or x+L > img_r or y+L >img_c:
+            pass
+        else:
+            if np.amax(img[x-L:x+L+1, y-L:y+L+1]) == 0:
+                new_img[x,y] = 0
 
     return new_img.astype(np.uint8)
 
@@ -149,21 +152,24 @@ def find_contour(img1, img2):
 
 
 if __name__ == '__main__':
+
+    s=3
+
     img_1 = cv2.imread('Gazebo_test_map/tesst1.png')
     img_1 = cv2.cvtColor(img_1, cv2.COLOR_RGB2GRAY)
     img_1 = _transform_state(input_map=img_1)
-    img_1_ = dilate(img_1, L=2)
-    img_1_de = erode(img_1_, L=1)
-    img_1_ct = find_contour(img1=img_1_, img2=dilate(img=img_1, L=1))
+    img_1_ = dilate(img_1, L=s)
+    img_1_de = erode(img_1_, L=s+1)
+    # img_1_ct = find_contour(img1=img_1_, img2=dilate(img=img_1, L=1))
 
     img_2 = cv2.imread('Gazebo_test_map/test0223_2.png')
     img_2 = cv2.cvtColor(img_2, cv2.COLOR_RGB2GRAY) 
     img_2 = _transform_state(input_map=img_2)
-    img_2_ = dilate(img_2, L=2)
-    img_2_de = erode(img_2_, L=1)
-    img_2_ct = find_contour(img1=img_2_, img2=dilate(img=img_2, L=1))
+    img_2_ = dilate(img_2, L=s)
+    img_2_de = erode(img_2_, L=s+1)
+    # img_2_ct = find_contour(img1=img_2_, img2=dilate(img=img_2, L=1))
 
-    img_sift = feature_detect_match(img1=img_1_ct, img2=img_2_ct, method="sift")
+    img_sift = feature_detect_match(img1=img_1_de, img2=img_2_de, method="sift")
     # img_dilate_sift = feature_detect_match(img1=img_1_, img2=img_2_, method="sift")
     # img_dilate_erode_sift = feature_detect_match(img1=img_1_de, img2=img_2_de, method="sift")
     # img_surf = feature_detect_match(img1=img_1, img2=img_2, method="fast")
