@@ -220,7 +220,7 @@ def _transform_state(input_map):
                 input_map[i, j] = 0
             
             else:                       # Gray  >> Unknown Space
-                input_map[i, j] = 255
+                input_map[i, j] = 128
 
     return input_map
 
@@ -247,8 +247,8 @@ img_1 = cv2.cvtColor(img_1, cv2.COLOR_RGB2GRAY) # 灰階圖
 img_2 = cv2.cvtColor(img_2, cv2.COLOR_RGB2GRAY) # 灰階圖
 
 
-# img_1 = _transform_state(input_map=img_1)
-# img_2 = _transform_state(input_map=img_2)
+img_1 = _transform_state(input_map=img_1)
+img_2 = _transform_state(input_map=img_2)
 
 
 
@@ -278,8 +278,8 @@ ax.xaxis.set_ticks_position('top')
 # ax.set_xlim(725,1145)
 # ax.set_ylim(715,1120)
 # ax.invert_yaxis()
-# if 1:
-#     plt.savefig("4_SIFT_result_1.png", bbox_inches='tight')
+if 1:
+    plt.savefig("4_SIFT_result_1.png", bbox_inches='tight')
 
 
 img_2_sift = cv2.drawKeypoints(img_2,
@@ -296,8 +296,8 @@ ax.xaxis.set_ticks_position('top')
 # ax.set_xlim(725,1145)
 # ax.set_ylim(715,1120)
 # ax.invert_yaxis()
-# if 1:
-#     plt.savefig("4_SIFT_result_2.png", bbox_inches='tight')
+if 1:
+    plt.savefig("4_SIFT_result_2.png", bbox_inches='tight')
 
 
 bf = cv2.BFMatcher() # 創建暴力匹配對象，cv2.BFMatcher()；
@@ -318,7 +318,7 @@ print(matches[1][1].distance, matches[1][1].imgIdx, matches[1][1].queryIdx, matc
 
 good = []
 for m, n in matches:
-    if m.distance < 0.9*n.distance: #獲得的K個最佳匹配中取出來第一個和第二個，進行比值，比值小於0.75，則爲好的匹配點
+    if m.distance < 0.5*n.distance: #獲得的K個最佳匹配中取出來第一個和第二個，進行比值，比值小於0.75，則爲好的匹配點
         good.append([m])
         # print(m.queryIdx, m.trainIdx, m.imgIdx)
         # print(n.queryIdx, n.trainIdx, n.imgIdx)
@@ -335,7 +335,7 @@ ax.xaxis.set_ticks_position('top')
 # ax.set_ylim(715,1120)
 # ax.invert_yaxis()
 if 1:
-    plt.savefig("4_SIFT_match_test_3.png", bbox_inches='tight')
+    plt.savefig("4_SIFT_match_test_1.png", bbox_inches='tight')
 
 
 
