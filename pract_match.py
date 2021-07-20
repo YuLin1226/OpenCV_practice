@@ -238,8 +238,8 @@ def _transform_state(input_map):
 # img_2 = cv2.imread('map4.3.png')
 
 # Third set of the image.
-img_1 = cv2.imread('Gazebo_test_map//tesst.png')
-img_2 = cv2.imread('Gazebo_test_map//tesst1.png')
+img_1 = cv2.imread('Gazebo_test_map//tesst1.png')
+img_2 = cv2.imread('Gazebo_test_map//test0223_2.png')
 
 
 
@@ -247,23 +247,57 @@ img_1 = cv2.cvtColor(img_1, cv2.COLOR_RGB2GRAY) # 灰階圖
 img_2 = cv2.cvtColor(img_2, cv2.COLOR_RGB2GRAY) # 灰階圖
 
 
-img_1 = _transform_state(input_map=img_1)
-img_2 = _transform_state(input_map=img_2)
+# img_1 = _transform_state(input_map=img_1)
+# img_2 = _transform_state(input_map=img_2)
 
 
 
-orb = cv2.ORB_create()
-key_points_1, descriptor_1 = orb.detectAndCompute(img_1, None)
-key_points_2, descriptor_2 = orb.detectAndCompute(img_2, None)
+# orb = cv2.ORB_create()
+# key_points_1, descriptor_1 = orb.detectAndCompute(img_1, None)
+# key_points_2, descriptor_2 = orb.detectAndCompute(img_2, None)
 
 
-# siftDetector = cv2.xfeatures2d.SIFT_create()
-# key_points_1, descriptor_1 = siftDetector.detectAndCompute(img_1, None)
-# key_points_2, descriptor_2 = siftDetector.detectAndCompute(img_2, None)
+siftDetector = cv2.xfeatures2d.SIFT_create()
+key_points_1, descriptor_1 = siftDetector.detectAndCompute(img_1, None)
+key_points_2, descriptor_2 = siftDetector.detectAndCompute(img_2, None)
 # descriptor 內含 n 個特徵 (列)，每個特徵含有 128 個bin value (行)。
 # key_points class 可查閱 CV2.KeyPoint()
 # 捕捉特徵座標使用 key_point[n].pt[0 or 1], 0代表x, 1代表y
 
+img_1_sift = cv2.drawKeypoints(img_1,
+                        outImage=img_1,
+                        keypoints=key_points_1, 
+                        flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS,
+                        color= (51, 163, 236))
+
+plt.figure()
+ax = plt.gca()      
+plt.margins(0, 0)        
+ax.imshow(img_1_sift, cmap='gray')
+ax.xaxis.set_ticks_position('top') 
+# ax.set_xlim(725,1145)
+# ax.set_ylim(715,1120)
+# ax.invert_yaxis()
+# if 1:
+#     plt.savefig("4_SIFT_result_1.png", bbox_inches='tight')
+
+
+img_2_sift = cv2.drawKeypoints(img_2,
+                        outImage=img_2,
+                        keypoints=key_points_2, 
+                        flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS,
+                        color= (51, 163, 236))
+
+plt.figure()
+ax = plt.gca()      
+plt.margins(0, 0)        
+ax.imshow(img_2_sift, cmap='gray')
+ax.xaxis.set_ticks_position('top') 
+# ax.set_xlim(725,1145)
+# ax.set_ylim(715,1120)
+# ax.invert_yaxis()
+# if 1:
+#     plt.savefig("4_SIFT_result_2.png", bbox_inches='tight')
 
 
 bf = cv2.BFMatcher() # 創建暴力匹配對象，cv2.BFMatcher()；
@@ -284,13 +318,28 @@ print(matches[1][1].distance, matches[1][1].imgIdx, matches[1][1].queryIdx, matc
 
 good = []
 for m, n in matches:
-    if m.distance < 0.75*n.distance: #獲得的K個最佳匹配中取出來第一個和第二個，進行比值，比值小於0.75，則爲好的匹配點
+    if m.distance < 0.9*n.distance: #獲得的K個最佳匹配中取出來第一個和第二個，進行比值，比值小於0.75，則爲好的匹配點
         good.append([m])
         # print(m.queryIdx, m.trainIdx, m.imgIdx)
         # print(n.queryIdx, n.trainIdx, n.imgIdx)
 
 img_3 = np.empty((600,600))
 img_3 = cv2.drawMatchesKnn(img_1, key_points_1, img_2, key_points_2, good, img_3, flags=2) #採用cv2.drawMatchesKnn()函數，在最佳匹配的點之間繪製直線
+
+plt.figure()
+ax = plt.gca()      
+plt.margins(0, 0)        
+ax.imshow(img_3, cmap='gray')
+ax.xaxis.set_ticks_position('top') 
+# ax.set_xlim(725,1145)
+# ax.set_ylim(715,1120)
+# ax.invert_yaxis()
+if 1:
+    plt.savefig("4_SIFT_match_test_3.png", bbox_inches='tight')
+
+
+
+
 
 # xM_1 = key_points_1[good[0][0].queryIdx].pt[0]
 # xm_1 = key_points_1[good[0][0].queryIdx].pt[0]
@@ -331,7 +380,8 @@ img_3 = cv2.drawMatchesKnn(img_1, key_points_1, img_2, key_points_2, good, img_3
 # xm_2 += dy
 
 # Draw match result and red rectangle.
-plt.imshow(img_3)
+# plt.figure()
+# plt.imshow(img_3)
 # plt.plot([xM_1, xM_1, xm_1, xm_1, xM_1], [yM_1, ym_1, ym_1, yM_1, yM_1], color='red')
 # plt.plot([xM_2, xM_2, xm_2, xm_2, xM_2], [yM_2, ym_2, ym_2, yM_2, yM_2], color='red')
 
